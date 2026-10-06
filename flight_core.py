@@ -257,6 +257,7 @@ class Session:
     plan: list[str] = field(default_factory=list)
     plan_index: int = 0
     detector: LoopDetector = field(default_factory=LoopDetector)
+    trace: list[dict] = field(default_factory=list)
 
     def ask_model(self, request: dict) -> AIMessage:
         prompt = json.dumps(request, ensure_ascii=False)
@@ -269,7 +270,6 @@ class Session:
         self.status = status
         self.handoff_report = handoff(reason, self.attempts, {"phase": self.phase, "selected": self.selected,
                                    "booking_code": self.booking_code, "tool_calls": self.tool_calls}, question)
-
 
 def _request(session: Session) -> dict:
     return {"task": "act", "phase": session.phase, "origin": session.constraints.origin,
@@ -298,6 +298,7 @@ def execute(session: Session, action: dict, tools: dict, policy: Any) -> None:
     name, args = action["name"], action["args"]
     warning = session.detector.action_warning(name, args)
     if warning:
+        session.trace.append({"tool": name, "args": args, "outcome": "blocked", "reason": warning})
         session.safety_catches += 1
         session.stop("HANDOFF", warning, "Có thể thay đổi chặng bay hoặc ngày đi không?")
         return
@@ -307,11 +308,19 @@ def execute(session: Session, action: dict, tools: dict, policy: Any) -> None:
         valid, reason = session.constraints.validate(flight)
         if not valid:
             session.safety_catches += 1
+            event = {"tool": name, "args": args, "outcome": "blocked", "reason": reason}
+            session.trace.append(event)
+            previous_replans = session.replans
             policy.on_invalid_flight(session, args, reason)
+            if session.replans > previous_replans:
+                event["recovery"] = f"Replan #{session.replans}: {' -> '.join(session.plan)}"
+            elif session.status == "RUNNING":
+                event["recovery"] = "Reject flight and choose another candidate from observations."
             return
     if name in {"book_seat", "pay"}:
         allowed, reason = PermissionChecker().check(name, flight, session.approved)
         if not allowed:
+            session.trace.append({"tool": name, "args": args, "outcome": "blocked", "reason": reason})
             session.safety_catches += 1
             session.stop("APPROVAL_REQUIRED", reason, "Bạn có phê duyệt thao tác này không?")
             return
@@ -319,6 +328,8 @@ def execute(session: Session, action: dict, tools: dict, policy: Any) -> None:
     result = tools[name].invoke(args)
     if isinstance(result, str):
         result = json.loads(result)
+    session.trace.append({"tool": name, "args": args,
+                          "outcome": "error" if "error" in result else "ok", "result": result})
     session.tool_calls += 1
     session.observations.append(result)
     if name == "search_flights":
