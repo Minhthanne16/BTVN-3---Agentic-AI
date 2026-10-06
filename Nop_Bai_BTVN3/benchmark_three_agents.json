@@ -1,0 +1,925 @@
+{
+  "environment": {
+    "python": "3.13.14",
+    "model": "deterministic BaseChatModel",
+    "token_method": "(prompt characters + answer characters) // 4; approximation"
+  },
+  "summary": {
+    "react": {
+      "completed": 2,
+      "cases": 5,
+      "success_rate": 0.4,
+      "model_calls": 18,
+      "tool_calls": 14,
+      "estimated_tokens": 887,
+      "mock_cost_usd": 0.0,
+      "latency_seconds": 0.022098,
+      "safety_catches": 4
+    },
+    "plan-execute": {
+      "completed": 1,
+      "cases": 5,
+      "success_rate": 0.2,
+      "model_calls": 5,
+      "tool_calls": 10,
+      "estimated_tokens": 114,
+      "mock_cost_usd": 0.0,
+      "latency_seconds": 0.012212,
+      "safety_catches": 3
+    },
+    "hybrid": {
+      "completed": 2,
+      "cases": 5,
+      "success_rate": 0.4,
+      "model_calls": 22,
+      "tool_calls": 14,
+      "estimated_tokens": 968,
+      "mock_cost_usd": 0.0,
+      "latency_seconds": 0.017924,
+      "safety_catches": 3
+    }
+  },
+  "cases": [
+    {
+      "agent": "react",
+      "scenario": 1,
+      "scenario_name": "Happy path",
+      "status": "COMPLETED",
+      "answer": "Đã xác nhận BK-0001 chuyến VN122 ghế 12A.",
+      "booking": {
+        "flight_id": "VN122",
+        "origin": "SGN",
+        "destination": "DAD",
+        "date": "2026-10-07",
+        "depart_time": "08:10",
+        "price": 1850000,
+        "airline": "Vietnam Airlines",
+        "refundable": true,
+        "seat_number": "12A",
+        "passenger_name": "Nguyen Van A",
+        "booking_code": "BK-0001",
+        "status": "confirmed",
+        "is_paid": true
+      },
+      "handoff": null,
+      "model_calls": 5,
+      "tool_calls": 5,
+      "estimated_tokens": 264,
+      "latency_seconds": 0.007868,
+      "safety_catches": 0,
+      "replans": 0,
+      "steps": 5,
+      "mock_cost_usd": 0.0,
+      "attempts": [
+        {
+          "tool": "search_flights",
+          "args": {
+            "origin": "SGN",
+            "destination": "DAD",
+            "date": "2026-10-07"
+          }
+        },
+        {
+          "tool": "check_seat",
+          "args": {
+            "flight_id": "VN122"
+          }
+        },
+        {
+          "tool": "book_seat",
+          "args": {
+            "flight_id": "VN122",
+            "seat_number": "12A",
+            "passenger_name": "Nguyen Van A"
+          }
+        },
+        {
+          "tool": "pay",
+          "args": {
+            "booking_code": "BK-0001"
+          }
+        },
+        {
+          "tool": "get_booking",
+          "args": {
+            "booking_code": "BK-0001"
+          }
+        }
+      ]
+    },
+    {
+      "agent": "react",
+      "scenario": 2,
+      "scenario_name": "Giờ bay sai, cần đổi hướng",
+      "status": "COMPLETED",
+      "answer": "Đã xác nhận BK-0001 chuyến VN122 ghế 12A.",
+      "booking": {
+        "flight_id": "VN122",
+        "origin": "SGN",
+        "destination": "DAD",
+        "date": "2026-10-07",
+        "depart_time": "08:10",
+        "price": 1850000,
+        "airline": "Vietnam Airlines",
+        "refundable": true,
+        "seat_number": "12A",
+        "passenger_name": "Nguyen Van A",
+        "booking_code": "BK-0001",
+        "status": "confirmed",
+        "is_paid": true
+      },
+      "handoff": null,
+      "model_calls": 7,
+      "tool_calls": 6,
+      "estimated_tokens": 379,
+      "latency_seconds": 0.006527,
+      "safety_catches": 1,
+      "replans": 0,
+      "steps": 7,
+      "mock_cost_usd": 0.0,
+      "attempts": [
+        {
+          "tool": "search_flights",
+          "args": {
+            "origin": "SGN",
+            "destination": "DAD",
+            "date": "2026-10-07"
+          }
+        },
+        {
+          "tool": "check_seat",
+          "args": {
+            "flight_id": "QH118"
+          }
+        },
+        {
+          "tool": "book_seat",
+          "args": {
+            "flight_id": "QH118",
+            "seat_number": "12A",
+            "passenger_name": "Nguyen Van A"
+          }
+        },
+        {
+          "tool": "check_seat",
+          "args": {
+            "flight_id": "VN122"
+          }
+        },
+        {
+          "tool": "book_seat",
+          "args": {
+            "flight_id": "VN122",
+            "seat_number": "12A",
+            "passenger_name": "Nguyen Van A"
+          }
+        },
+        {
+          "tool": "pay",
+          "args": {
+            "booking_code": "BK-0001"
+          }
+        },
+        {
+          "tool": "get_booking",
+          "args": {
+            "booking_code": "BK-0001"
+          }
+        }
+      ]
+    },
+    {
+      "agent": "react",
+      "scenario": 3,
+      "scenario_name": "Cần phê duyệt",
+      "status": "APPROVAL_REQUIRED",
+      "answer": "",
+      "booking": null,
+      "handoff": {
+        "stop_reason": "Giá vượt hạn mức tự duyệt hoặc vé không hoàn hủy",
+        "da_thu": [
+          {
+            "tool": "search_flights",
+            "args": {
+              "origin": "SGN",
+              "destination": "DAD",
+              "date": "2026-10-07"
+            }
+          },
+          {
+            "tool": "check_seat",
+            "args": {
+              "flight_id": "VJ602"
+            }
+          },
+          {
+            "tool": "book_seat",
+            "args": {
+              "flight_id": "VJ602",
+              "seat_number": "12A",
+              "passenger_name": "Nguyen Van A"
+            }
+          }
+        ],
+        "trang_thai": {
+          "phase": "book",
+          "selected": "VJ602",
+          "booking_code": null,
+          "tool_calls": 2
+        },
+        "cau_hoi_cho_nguoi": "Bạn có phê duyệt thao tác này không?"
+      },
+      "model_calls": 3,
+      "tool_calls": 2,
+      "estimated_tokens": 140,
+      "latency_seconds": 0.003199,
+      "safety_catches": 1,
+      "replans": 0,
+      "steps": 3,
+      "mock_cost_usd": 0.0,
+      "attempts": [
+        {
+          "tool": "search_flights",
+          "args": {
+            "origin": "SGN",
+            "destination": "DAD",
+            "date": "2026-10-07"
+          }
+        },
+        {
+          "tool": "check_seat",
+          "args": {
+            "flight_id": "VJ602"
+          }
+        },
+        {
+          "tool": "book_seat",
+          "args": {
+            "flight_id": "VJ602",
+            "seat_number": "12A",
+            "passenger_name": "Nguyen Van A"
+          }
+        }
+      ]
+    },
+    {
+      "agent": "react",
+      "scenario": 4,
+      "scenario_name": "Không có chuyến bay",
+      "status": "HANDOFF",
+      "answer": "",
+      "booking": null,
+      "handoff": {
+        "stop_reason": "LOOP: lặp cùng tool và tham số",
+        "da_thu": [
+          {
+            "tool": "search_flights",
+            "args": {
+              "origin": "VTG",
+              "destination": "VCS",
+              "date": "2026-10-07"
+            }
+          }
+        ],
+        "trang_thai": {
+          "phase": "search",
+          "selected": null,
+          "booking_code": null,
+          "tool_calls": 1
+        },
+        "cau_hoi_cho_nguoi": "Có thể thay đổi chặng bay hoặc ngày đi không?"
+      },
+      "model_calls": 2,
+      "tool_calls": 1,
+      "estimated_tokens": 90,
+      "latency_seconds": 0.002952,
+      "safety_catches": 1,
+      "replans": 0,
+      "steps": 1,
+      "mock_cost_usd": 0.0,
+      "attempts": [
+        {
+          "tool": "search_flights",
+          "args": {
+            "origin": "VTG",
+            "destination": "VCS",
+            "date": "2026-10-07"
+          }
+        }
+      ]
+    },
+    {
+      "agent": "react",
+      "scenario": 5,
+      "scenario_name": "Bịa đặt dữ kiện",
+      "status": "UNSUPPORTED_CLAIM",
+      "answer": "",
+      "booking": null,
+      "handoff": {
+        "stop_reason": "Không có căn cứ: VN999, 5C, 1.200.000đ",
+        "da_thu": [],
+        "trang_thai": {
+          "phase": "search",
+          "selected": null,
+          "booking_code": null,
+          "tool_calls": 0
+        },
+        "cau_hoi_cho_nguoi": "Có cần tra cứu dữ liệu đặt vé thực tế không?"
+      },
+      "model_calls": 1,
+      "tool_calls": 0,
+      "estimated_tokens": 14,
+      "latency_seconds": 0.001552,
+      "safety_catches": 1,
+      "replans": 0,
+      "steps": 0,
+      "mock_cost_usd": 0.0,
+      "attempts": []
+    },
+    {
+      "agent": "plan-execute",
+      "scenario": 1,
+      "scenario_name": "Happy path",
+      "status": "COMPLETED",
+      "answer": "Đã xác nhận BK-0001 chuyến VN122 ghế 12A.",
+      "booking": {
+        "flight_id": "VN122",
+        "origin": "SGN",
+        "destination": "DAD",
+        "date": "2026-10-07",
+        "depart_time": "08:10",
+        "price": 1850000,
+        "airline": "Vietnam Airlines",
+        "refundable": true,
+        "seat_number": "12A",
+        "passenger_name": "Nguyen Van A",
+        "booking_code": "BK-0001",
+        "status": "confirmed",
+        "is_paid": true
+      },
+      "handoff": null,
+      "model_calls": 1,
+      "tool_calls": 5,
+      "estimated_tokens": 25,
+      "latency_seconds": 0.00397,
+      "safety_catches": 0,
+      "replans": 0,
+      "steps": 5,
+      "mock_cost_usd": 0.0,
+      "attempts": [
+        {
+          "tool": "search_flights",
+          "args": {
+            "origin": "SGN",
+            "destination": "DAD",
+            "date": "2026-10-07"
+          }
+        },
+        {
+          "tool": "check_seat",
+          "args": {
+            "flight_id": "VN122"
+          }
+        },
+        {
+          "tool": "book_seat",
+          "args": {
+            "flight_id": "VN122",
+            "seat_number": "12A",
+            "passenger_name": "Nguyen Van A"
+          }
+        },
+        {
+          "tool": "pay",
+          "args": {
+            "booking_code": "BK-0001"
+          }
+        },
+        {
+          "tool": "get_booking",
+          "args": {
+            "booking_code": "BK-0001"
+          }
+        }
+      ]
+    },
+    {
+      "agent": "plan-execute",
+      "scenario": 2,
+      "scenario_name": "Giờ bay sai, cần đổi hướng",
+      "status": "HANDOFF",
+      "answer": "",
+      "booking": null,
+      "handoff": {
+        "stop_reason": "CONSTRAINT_VIOLATION: Giờ bay vượt giới hạn",
+        "da_thu": [
+          {
+            "tool": "search_flights",
+            "args": {
+              "origin": "SGN",
+              "destination": "DAD",
+              "date": "2026-10-07"
+            }
+          },
+          {
+            "tool": "check_seat",
+            "args": {
+              "flight_id": "QH118"
+            }
+          },
+          {
+            "tool": "book_seat",
+            "args": {
+              "flight_id": "QH118",
+              "seat_number": "12A",
+              "passenger_name": "Nguyen Van A"
+            }
+          }
+        ],
+        "trang_thai": {
+          "phase": "book",
+          "selected": "QH118",
+          "booking_code": null,
+          "tool_calls": 2
+        },
+        "cau_hoi_cho_nguoi": "Lập lại kế hoạch với chuyến hợp lệ?"
+      },
+      "model_calls": 1,
+      "tool_calls": 2,
+      "estimated_tokens": 25,
+      "latency_seconds": 0.002668,
+      "safety_catches": 1,
+      "replans": 0,
+      "steps": 3,
+      "mock_cost_usd": 0.0,
+      "attempts": [
+        {
+          "tool": "search_flights",
+          "args": {
+            "origin": "SGN",
+            "destination": "DAD",
+            "date": "2026-10-07"
+          }
+        },
+        {
+          "tool": "check_seat",
+          "args": {
+            "flight_id": "QH118"
+          }
+        },
+        {
+          "tool": "book_seat",
+          "args": {
+            "flight_id": "QH118",
+            "seat_number": "12A",
+            "passenger_name": "Nguyen Van A"
+          }
+        }
+      ]
+    },
+    {
+      "agent": "plan-execute",
+      "scenario": 3,
+      "scenario_name": "Cần phê duyệt",
+      "status": "APPROVAL_REQUIRED",
+      "answer": "",
+      "booking": null,
+      "handoff": {
+        "stop_reason": "Giá vượt hạn mức tự duyệt hoặc vé không hoàn hủy",
+        "da_thu": [
+          {
+            "tool": "search_flights",
+            "args": {
+              "origin": "SGN",
+              "destination": "DAD",
+              "date": "2026-10-07"
+            }
+          },
+          {
+            "tool": "check_seat",
+            "args": {
+              "flight_id": "VJ602"
+            }
+          },
+          {
+            "tool": "book_seat",
+            "args": {
+              "flight_id": "VJ602",
+              "seat_number": "12A",
+              "passenger_name": "Nguyen Van A"
+            }
+          }
+        ],
+        "trang_thai": {
+          "phase": "book",
+          "selected": "VJ602",
+          "booking_code": null,
+          "tool_calls": 2
+        },
+        "cau_hoi_cho_nguoi": "Bạn có phê duyệt thao tác này không?"
+      },
+      "model_calls": 1,
+      "tool_calls": 2,
+      "estimated_tokens": 25,
+      "latency_seconds": 0.002715,
+      "safety_catches": 1,
+      "replans": 0,
+      "steps": 3,
+      "mock_cost_usd": 0.0,
+      "attempts": [
+        {
+          "tool": "search_flights",
+          "args": {
+            "origin": "SGN",
+            "destination": "DAD",
+            "date": "2026-10-07"
+          }
+        },
+        {
+          "tool": "check_seat",
+          "args": {
+            "flight_id": "VJ602"
+          }
+        },
+        {
+          "tool": "book_seat",
+          "args": {
+            "flight_id": "VJ602",
+            "seat_number": "12A",
+            "passenger_name": "Nguyen Van A"
+          }
+        }
+      ]
+    },
+    {
+      "agent": "plan-execute",
+      "scenario": 4,
+      "scenario_name": "Không có chuyến bay",
+      "status": "HANDOFF",
+      "answer": "",
+      "booking": null,
+      "handoff": {
+        "stop_reason": "NO_FLIGHTS",
+        "da_thu": [
+          {
+            "tool": "search_flights",
+            "args": {
+              "origin": "VTG",
+              "destination": "VCS",
+              "date": "2026-10-07"
+            }
+          }
+        ],
+        "trang_thai": {
+          "phase": "search",
+          "selected": null,
+          "booking_code": null,
+          "tool_calls": 1
+        },
+        "cau_hoi_cho_nguoi": "Có chặng bay hoặc ngày khác không?"
+      },
+      "model_calls": 1,
+      "tool_calls": 1,
+      "estimated_tokens": 25,
+      "latency_seconds": 0.00159,
+      "safety_catches": 0,
+      "replans": 0,
+      "steps": 1,
+      "mock_cost_usd": 0.0,
+      "attempts": [
+        {
+          "tool": "search_flights",
+          "args": {
+            "origin": "VTG",
+            "destination": "VCS",
+            "date": "2026-10-07"
+          }
+        }
+      ]
+    },
+    {
+      "agent": "plan-execute",
+      "scenario": 5,
+      "scenario_name": "Bịa đặt dữ kiện",
+      "status": "UNSUPPORTED_CLAIM",
+      "answer": "",
+      "booking": null,
+      "handoff": {
+        "stop_reason": "Không có căn cứ: VN999, 5C, 1.200.000đ",
+        "da_thu": [],
+        "trang_thai": {
+          "phase": "search",
+          "selected": null,
+          "booking_code": null,
+          "tool_calls": 0
+        },
+        "cau_hoi_cho_nguoi": "Có cần tra cứu dữ liệu đặt vé thực tế không?"
+      },
+      "model_calls": 1,
+      "tool_calls": 0,
+      "estimated_tokens": 14,
+      "latency_seconds": 0.001269,
+      "safety_catches": 1,
+      "replans": 0,
+      "steps": 0,
+      "mock_cost_usd": 0.0,
+      "attempts": []
+    },
+    {
+      "agent": "hybrid",
+      "scenario": 1,
+      "scenario_name": "Happy path",
+      "status": "COMPLETED",
+      "answer": "Đã xác nhận BK-0001 chuyến VN122 ghế 12A.",
+      "booking": {
+        "flight_id": "VN122",
+        "origin": "SGN",
+        "destination": "DAD",
+        "date": "2026-10-07",
+        "depart_time": "08:10",
+        "price": 1850000,
+        "airline": "Vietnam Airlines",
+        "refundable": true,
+        "seat_number": "12A",
+        "passenger_name": "Nguyen Van A",
+        "booking_code": "BK-0001",
+        "status": "confirmed",
+        "is_paid": true
+      },
+      "handoff": null,
+      "model_calls": 6,
+      "tool_calls": 5,
+      "estimated_tokens": 289,
+      "latency_seconds": 0.005286,
+      "safety_catches": 0,
+      "replans": 0,
+      "steps": 5,
+      "mock_cost_usd": 0.0,
+      "attempts": [
+        {
+          "tool": "search_flights",
+          "args": {
+            "origin": "SGN",
+            "destination": "DAD",
+            "date": "2026-10-07"
+          }
+        },
+        {
+          "tool": "check_seat",
+          "args": {
+            "flight_id": "VN122"
+          }
+        },
+        {
+          "tool": "book_seat",
+          "args": {
+            "flight_id": "VN122",
+            "seat_number": "12A",
+            "passenger_name": "Nguyen Van A"
+          }
+        },
+        {
+          "tool": "pay",
+          "args": {
+            "booking_code": "BK-0001"
+          }
+        },
+        {
+          "tool": "get_booking",
+          "args": {
+            "booking_code": "BK-0001"
+          }
+        }
+      ]
+    },
+    {
+      "agent": "hybrid",
+      "scenario": 2,
+      "scenario_name": "Giờ bay sai, cần đổi hướng",
+      "status": "COMPLETED",
+      "answer": "Đã xác nhận BK-0001 chuyến VN122 ghế 12A.",
+      "booking": {
+        "flight_id": "VN122",
+        "origin": "SGN",
+        "destination": "DAD",
+        "date": "2026-10-07",
+        "depart_time": "08:10",
+        "price": 1850000,
+        "airline": "Vietnam Airlines",
+        "refundable": true,
+        "seat_number": "12A",
+        "passenger_name": "Nguyen Van A",
+        "booking_code": "BK-0001",
+        "status": "confirmed",
+        "is_paid": true
+      },
+      "handoff": null,
+      "model_calls": 9,
+      "tool_calls": 6,
+      "estimated_tokens": 430,
+      "latency_seconds": 0.006108,
+      "safety_catches": 1,
+      "replans": 1,
+      "steps": 7,
+      "mock_cost_usd": 0.0,
+      "attempts": [
+        {
+          "tool": "search_flights",
+          "args": {
+            "origin": "SGN",
+            "destination": "DAD",
+            "date": "2026-10-07"
+          }
+        },
+        {
+          "tool": "check_seat",
+          "args": {
+            "flight_id": "QH118"
+          }
+        },
+        {
+          "tool": "book_seat",
+          "args": {
+            "flight_id": "QH118",
+            "seat_number": "12A",
+            "passenger_name": "Nguyen Van A"
+          }
+        },
+        {
+          "tool": "check_seat",
+          "args": {
+            "flight_id": "VN122"
+          }
+        },
+        {
+          "tool": "book_seat",
+          "args": {
+            "flight_id": "VN122",
+            "seat_number": "12A",
+            "passenger_name": "Nguyen Van A"
+          }
+        },
+        {
+          "tool": "pay",
+          "args": {
+            "booking_code": "BK-0001"
+          }
+        },
+        {
+          "tool": "get_booking",
+          "args": {
+            "booking_code": "BK-0001"
+          }
+        }
+      ]
+    },
+    {
+      "agent": "hybrid",
+      "scenario": 3,
+      "scenario_name": "Cần phê duyệt",
+      "status": "APPROVAL_REQUIRED",
+      "answer": "",
+      "booking": null,
+      "handoff": {
+        "stop_reason": "Giá vượt hạn mức tự duyệt hoặc vé không hoàn hủy",
+        "da_thu": [
+          {
+            "tool": "search_flights",
+            "args": {
+              "origin": "SGN",
+              "destination": "DAD",
+              "date": "2026-10-07"
+            }
+          },
+          {
+            "tool": "check_seat",
+            "args": {
+              "flight_id": "VJ602"
+            }
+          },
+          {
+            "tool": "book_seat",
+            "args": {
+              "flight_id": "VJ602",
+              "seat_number": "12A",
+              "passenger_name": "Nguyen Van A"
+            }
+          }
+        ],
+        "trang_thai": {
+          "phase": "book",
+          "selected": "VJ602",
+          "booking_code": null,
+          "tool_calls": 2
+        },
+        "cau_hoi_cho_nguoi": "Bạn có phê duyệt thao tác này không?"
+      },
+      "model_calls": 4,
+      "tool_calls": 2,
+      "estimated_tokens": 165,
+      "latency_seconds": 0.003217,
+      "safety_catches": 1,
+      "replans": 0,
+      "steps": 3,
+      "mock_cost_usd": 0.0,
+      "attempts": [
+        {
+          "tool": "search_flights",
+          "args": {
+            "origin": "SGN",
+            "destination": "DAD",
+            "date": "2026-10-07"
+          }
+        },
+        {
+          "tool": "check_seat",
+          "args": {
+            "flight_id": "VJ602"
+          }
+        },
+        {
+          "tool": "book_seat",
+          "args": {
+            "flight_id": "VJ602",
+            "seat_number": "12A",
+            "passenger_name": "Nguyen Van A"
+          }
+        }
+      ]
+    },
+    {
+      "agent": "hybrid",
+      "scenario": 4,
+      "scenario_name": "Không có chuyến bay",
+      "status": "HANDOFF",
+      "answer": "",
+      "booking": null,
+      "handoff": {
+        "stop_reason": "NO_FLIGHTS",
+        "da_thu": [
+          {
+            "tool": "search_flights",
+            "args": {
+              "origin": "VTG",
+              "destination": "VCS",
+              "date": "2026-10-07"
+            }
+          }
+        ],
+        "trang_thai": {
+          "phase": "search",
+          "selected": null,
+          "booking_code": null,
+          "tool_calls": 1
+        },
+        "cau_hoi_cho_nguoi": "Có chặng bay hoặc ngày khác không?"
+      },
+      "model_calls": 2,
+      "tool_calls": 1,
+      "estimated_tokens": 70,
+      "latency_seconds": 0.001958,
+      "safety_catches": 0,
+      "replans": 0,
+      "steps": 1,
+      "mock_cost_usd": 0.0,
+      "attempts": [
+        {
+          "tool": "search_flights",
+          "args": {
+            "origin": "VTG",
+            "destination": "VCS",
+            "date": "2026-10-07"
+          }
+        }
+      ]
+    },
+    {
+      "agent": "hybrid",
+      "scenario": 5,
+      "scenario_name": "Bịa đặt dữ kiện",
+      "status": "UNSUPPORTED_CLAIM",
+      "answer": "",
+      "booking": null,
+      "handoff": {
+        "stop_reason": "Không có căn cứ: VN999, 5C, 1.200.000đ",
+        "da_thu": [],
+        "trang_thai": {
+          "phase": "search",
+          "selected": null,
+          "booking_code": null,
+          "tool_calls": 0
+        },
+        "cau_hoi_cho_nguoi": "Có cần tra cứu dữ liệu đặt vé thực tế không?"
+      },
+      "model_calls": 1,
+      "tool_calls": 0,
+      "estimated_tokens": 14,
+      "latency_seconds": 0.001355,
+      "safety_catches": 1,
+      "replans": 0,
+      "steps": 0,
+      "mock_cost_usd": 0.0,
+      "attempts": []
+    }
+  ]
+}
